@@ -1,0 +1,29 @@
+{
+    "slug": "wrapper",
+    "id": "extensionWrapper",
+    "name": "Extension Wrapper",
+    "description": "在Turbowarp中加载CCW扩展的前置扩展",
+    "nameTranslations": {
+        "en": "extensionWrapper",
+        "zh-cn": "扩展适配器"
+    },
+    "descriptionTranslations": {
+        "en": "A bootstrap extension for CCW extensions loader in Turbowarp",
+        "zh-cn": "在Turbowarp中加载CCW扩展的前置扩展"
+    },
+    "image": "ccw.svg",
+    "by": [
+        {
+            "name": "Xbodwf",
+            "link": "https://github.com/xbodwf"
+        },
+        {
+            "name": "FurryR",
+            "link": "https://github.com/FurryR"
+        }
+    ],
+    "docs": false,
+    "samples": [
+        "ccwpolyfill"
+    ]
+}
