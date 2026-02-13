@@ -4,6 +4,9 @@
  */
 
 import { BlockType } from "./def/self";
+import { VirtualMachine } from "./def/VM";
+import { handleVMwithExt } from "./extensionHandler";
+import { createVMProxy } from "./vmSetup";
 //import { JSDecompiler, decompile } from "./module";
 
 export class ExtensionLoader extends Array<any> {
@@ -166,11 +169,12 @@ export class ExtensionLoader extends Array<any> {
     if (results.length > 0) {
       try {
         let moduleExports = results[0];
+        const vmProxy = createVMProxy(Scratch.vm as VirtualMachine);
 
         if (moduleExports.__esModule === true) {
-          target = new moduleExports.default(Scratch.vm);
+          target = new moduleExports.default(vmProxy);
         } else {
-          target = new moduleExports(Scratch.vm);
+          target = new moduleExports(vmProxy);
         }
 
         info = target.getInfo();
@@ -194,7 +198,7 @@ export class ExtensionLoader extends Array<any> {
         };
 
         Scratch.extensions.register(target);
-        Scratch.vm.runtime[`ext_${info.id}`] = target;
+        handleVMwithExt(info,target)
         console.log("[CCW Polyfill] Successfully registered extension:", info.id);
       } catch (e) {
         console.warn("[CCW Polyfill] First Method failed...", e);
@@ -221,7 +225,7 @@ export class ExtensionLoader extends Array<any> {
             return info;
           };
           window.ScratchExtensions.register(info.name || info.id, { blocks: processed }, proxiedTarget);
-          Scratch.vm.runtime[`ext_${info.id}`] = target;
+          handleVMwithExt(info,target)
         } catch (e) {
           console.warn("[CCW Polyfill] Failed to register extensions.", e);
         }

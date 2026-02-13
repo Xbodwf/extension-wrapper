@@ -6,18 +6,49 @@
 import { VMToJSON } from './vmToJson';
 import { showConfirm, addModalStyles } from './ui';
 import { translate } from './l10n';
+import { VirtualMachine } from './def/VM';
 
 /**
  * Sets up the Scratch VM with CCW polyfill features
  * @param vm - The Scratch VM instance
  * @param vmToJSON - The VMToJSON converter instance
  */
-export function setupVM(vm: any, vmToJSON: VMToJSON): void {
+export function setupVM(vm: VirtualMachine, vmToJSON: VMToJSON): void {
   // Add CCW polyfill styles
   addModalStyles();
   
   // Add CCW polyfill features to VM
   setupVMFeatures(vm, vmToJSON);
+}
+
+/**
+ * Creates a proxy for the VM that falls back to vm.runtime for missing properties
+ * @param vm - The Scratch VM instance
+ * @returns A proxied VM instance
+ */
+export function createVMProxy(vm: VirtualMachine): any {
+  return new Proxy(vm, {
+    get(target, prop, receiver) {
+      // 1. Check if vm has the property
+      if (prop in target) {
+        const value = Reflect.get(target, prop, receiver);
+        if (typeof value === 'function') {
+          return value.bind(target);
+        }
+        return value;
+      }
+      // 2. If not, check if vm.runtime has the property
+      if (target.runtime && prop in target.runtime) {
+        const value = Reflect.get(target.runtime, prop, target.runtime);
+        if (typeof value === 'function') {
+          return value.bind(target.runtime);
+        }
+        return value;
+      }
+      // 3. Otherwise return undefined
+      return undefined;
+    }
+  });
 }
 
 /**
@@ -97,7 +128,7 @@ function addPolyfillStyles(): void {
  * @param vm - The Scratch VM instance
  * @param vmToJSON - The VMToJSON converter instance
  */
-function setupVMFeatures(vm: any, vmToJSON: VMToJSON): void {
+function setupVMFeatures(vm: VirtualMachine, vmToJSON: VMToJSON): void {
   // Add project export functionality
   vm.exportProject = async () => {
     try {
@@ -110,7 +141,7 @@ function setupVMFeatures(vm: any, vmToJSON: VMToJSON): void {
 
   vm.getFormatMessage = (fm: any) => {
     return (i: any) =>
-      typeof fm[Scratch.translate.language][i.id] == "undefined" ? i["default"] : fm[Scratch.translate.language][i.id];
+      typeof fm[(Scratch as any).translate.language][i.id] == "undefined" ? i["default"] : fm[(Scratch as any).translate.language][i.id];
   };
   vm.runtime.getFormatMessage = vm.getFormatMessage;
   if (typeof vm.toJSON != "function") vm.toJSON = vmToJSON.convert.bind(vmToJSON, vm);
@@ -120,7 +151,9 @@ function setupVMFeatures(vm: any, vmToJSON: VMToJSON): void {
     convert: vmToJSON.convert.bind(vmToJSON, vm),
     save: vmToJSON.saveProjectSb3.bind(vmToJSON, vm),
   };
-  vm.renderer.layerManager = { rootFolder: "" };
+  vm._blockInfo = vm.runtime._blockInfo;
+  vm.targets = vm.runtime.targets;
+  (vm.renderer as any).layerManager = { rootFolder: "" };
   vm.runtime.ccwAPI = {
     commentWithStageSnapshot() {
       return new Promise((resolve) => {
@@ -147,7 +180,7 @@ function setupVMFeatures(vm: any, vmToJSON: VMToJSON): void {
         resolve("PC");
       });
     },
-    getExtensionURLById(id: string) {
+    getExtensionURLById(_id: string) {
       return new Promise((resolve) => {
         resolve("");
       });
@@ -238,6 +271,6 @@ function setupVMFeatures(vm: any, vmToJSON: VMToJSON): void {
     sendPlayEventCode() { },
     setAvatar() { },
     showShare() { },
-    uploadAssetToCloud(M: any, t: any) { },
+    uploadAssetToCloud(_M: any, _t: any) { },
   };
 }

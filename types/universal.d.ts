@@ -1,5 +1,7 @@
 /// <reference path="../node_modules/@turbowarp/types/index.d.ts" />
 
+import { VirtualMachine } from "src/def/VM"
+
 interface MessageObject {
   id?: string
   default: string
@@ -16,4 +18,5 @@ interface TranslateFn {
 
 declare namespace Scratch {
   const translate: TranslateFn
+  const vm: VirtualMachine
 }

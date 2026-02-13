@@ -1,4 +1,5 @@
 /// <reference path="../node_modules/@turbowarp/types/index.d.ts" />
+/// <reference path="./universal.d.ts" />
 
 declare namespace Scratch {
   const vm: VM

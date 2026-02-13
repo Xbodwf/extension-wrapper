@@ -3,13 +3,15 @@
  * TypeScript class to convert Scratch VM runtime state to project.json format
  */
 
+import { VirtualMachine } from './def/VM';
+
 export class VMToJSON {
   /**
    * Convert Scratch VM runtime to project.json format
    * @param vm - The Scratch VM instance
    * @returns project.json compatible object
    */
-  convert(vm: any): any {
+  convert(vm: VirtualMachine): any {
     const targets = vm.runtime.targets || [];
     const projectTargets = targets.map((target: any) => this.#convertTarget(target));
 
@@ -33,10 +35,10 @@ export class VMToJSON {
   /**
    * Save project as SB3 file
    * @param vm - The Scratch VM instance
-   * @param options - Save options
+   * @param _options - Save options
    * @returns Promise with the SB3 file data
    */
-  async saveProjectSb3(vm: any, options: any = {}): Promise<any> {
+  async saveProjectSb3(vm: VirtualMachine, _options: any = {}): Promise<any> {
     const projectJson = this.convert(vm);
     const fileHandle = await (window as any).showSaveFilePicker({
       suggestedName: "project.sb3",

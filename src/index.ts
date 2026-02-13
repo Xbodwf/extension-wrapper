@@ -12,9 +12,10 @@ import { BlockType } from './def/self';
 import { ExtensionLoader } from './extensionLoader';
 import { VMToJSON } from './vmToJson';
 import { showConfirm } from './ui';
-import { setupVM } from './vmSetup';
+import { setupVM, createVMProxy } from './vmSetup';
 import { register as PanelReg} from './gandi/panel';
 import { t } from './l10n';
+import { VirtualMachine } from './def/VM';
 
 ; (function (sc) {
   if (sc.extensions.unsandboxed === false) {
@@ -28,9 +29,9 @@ import { t } from './l10n';
   class CCWPolyfill implements Scratch.Extension {
     public extensionLoader: ExtensionLoader;
     private vmToJSON: VMToJSON;
-    private vm: VM;
+    private vm: VirtualMachine;
 
-    constructor(vm: VM) {
+    constructor(vm: VirtualMachine) {
       this.vm = vm;
       this.extensionLoader = new ExtensionLoader();
       this.vmToJSON = new VMToJSON();
@@ -79,7 +80,8 @@ import { t } from './l10n';
               _tempExtValue = newValue;
               let target: any, info: any;
               try {
-                target = new newValue.Extension(thisObj.vm);
+                const vmProxy = createVMProxy(thisObj.vm);
+                target = new newValue.Extension(vmProxy);
                 const proxiedTarget = thisObj.extensionLoader.createProxiedFunctions(target);
                 info = target.getInfo();
                 proxiedTarget.getInfo = () => {
@@ -145,5 +147,5 @@ import { t } from './l10n';
 
 
 
-  sc.extensions.register(new CCWPolyfill(sc.vm));
+  sc.extensions.register(new CCWPolyfill(sc.vm as VirtualMachine));
 })(Scratch);
