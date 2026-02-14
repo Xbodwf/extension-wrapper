@@ -3,7 +3,8 @@
 Based on [Scratch Extension Template](https://github.com/FurryR/scratch-ext)
 
 
-Add a CCW extension loader for Turbowarp or PenguinMod.
+Add a CCW extension loader for 02Engine,Turbowarp or PenguinMod.
+
 
 ## Usage
 
@@ -14,7 +15,7 @@ Add a CCW extension loader for Turbowarp or PenguinMod.
 ## Development
 
 ```bash
-git clone https://github.com/xbodwf/extension-wrapper.git
+git clone https://github.com/02Engine/extension-wrapper.git
 ```
 
 ```bash
