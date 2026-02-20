@@ -1,8 +1,5 @@
 import { Renderer } from "./Renderer";
 
-
-
-
 interface LayerManager {
   rootFolder: rootFolder;
   _renderer: Renderer;

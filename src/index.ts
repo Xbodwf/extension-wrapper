@@ -13,7 +13,7 @@ import { ExtensionLoader } from './extensionLoader';
 import { VMToJSON } from './vmToJson';
 import { showConfirm } from './ui';
 import { setupVM, createVMProxy } from './vmSetup';
-import { register as PanelReg} from './gandi/panel';
+import { register as PanelReg} from './gandi/panel/index';
 import { t } from './l10n';
 import { VirtualMachine } from './def/VM';
 
